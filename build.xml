@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Nomin M1 Staging" default="run task">
+   <property name="basedir" value="."/>
+
+   <target name="sync-app" description="Sync app folder">
+       <exec executable="rsync" failonerror="true">
+           <arg line="-rv app/ /<document_root_absalute_path>/app/"/>
+       </exec>
+   </target>
+   <target name="sync-skin" description="Sync skin folder">
+       <exec executable="rsync" failonerror="true">
+           <arg line="-rv skin/ /<document_root_absalute_path>/skin/"/>
+       </exec>
+   </target>
+   <target name="sync-local-xml" description="Copy Local XML">
+       <exec executable="rsync" failonerror="true">
+           <arg line="-rv ../../config/nomin-m1/local.xml /<document_root_absalute_path>/app/etc/local.xml"/>
+       </exec>
+   </target>
+   <target name="cache-flush" description="Delete default and amasty fpc cache folders">
+       <exec executable="rm" failonerror="true">
+           <arg line="-rf /<document_root_absalute_path>/var/cache /<document_root_absalute_path>/var/amasty_fpc/ "/>
+       </exec>
+   </target>
+   <target name="reindex" description="Reindex all the indexes">
+       <exec executable="php" failonerror="true">
+           <arg line="/<document_root_absalute_path>/shell/indexer.php reindexall"/>
+       </exec>
+   </target>
+   <target name="run task" description="Run target one by one">
+       <sequential>
+           <antcall target="sync-app"/>
+           <antcall target="sync-skin"/>
+           <antcall target="sync-local-xml"/>
+           <antcall target="cache-flush"/>
+           <antcall target="reindex"/>
+       </sequential>
+   </target>
+</project>
